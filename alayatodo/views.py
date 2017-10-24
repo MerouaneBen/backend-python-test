@@ -1,12 +1,20 @@
 from alayatodo import app
+from wtforms.validators import DataRequired  
+from wtforms import Form, TextField    
 from flask import (
     g,
     redirect,
     render_template,
     request,
-    session
+    session, 
+    flash
     )
 
+class DescriptionForm(Form):
+    """this class validate the content of the description filed.
+    this field must not be empty, and also no blank spaces.
+    """
+    description = TextField('Description', validators=[DataRequired()])
 
 @app.route('/')
 def home():
@@ -65,13 +73,24 @@ def todos():
 def todos_POST():
     if not session.get('logged_in'):
         return redirect('/login')
-    g.db.execute(
-        "INSERT INTO todos (user_id, description) VALUES ('%s', '%s')"
-        % (session['user']['id'], request.form.get('description', ''))
-    )
-    g.db.commit()
-    return redirect('/todo')
 
+    # we pass a form object to check the content
+    description = DescriptionForm(request.form)
+
+    if description.validate():
+        # if the content is valide
+        # we assign the content of the field in this variable 
+        description_text = request.form.get('description')
+        g.db.execute(
+            "INSERT INTO todos (user_id, description) VALUES ('%s', '%s')"
+            % (session['user']['id'], description_text) # request.form.get('description', '') I'm not sure about why we have 2 elements iside this tuple, when we need only one value.
+        )
+        g.db.commit()
+        return redirect('/todo')
+    else:
+        flash('The description field is required. ')
+
+    return redirect('/todo')
 
 @app.route('/todo/<id>', methods=['POST'])
 def todo_delete(id):

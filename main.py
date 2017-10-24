@@ -30,4 +30,4 @@ if __name__ == '__main__':
         _run_sql('resources/fixtures.sql')
         print "AlayaTodo: Database initialized."
     else:
-        app.run(use_reloader=True)
+        app.run(use_reloader=True,host='0.0.0.0') # the host argument allow connection from any machine
