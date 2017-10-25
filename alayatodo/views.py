@@ -1,8 +1,10 @@
 from alayatodo import app
-from wtforms.validators import DataRequired  
+from wtforms.validators import DataRequired
+from sqlalchemy import desc 
 from wtforms import Form, TextField
 from .models import Users, Todos 
 from alayatodo import app, db 
+from config import TODOS_PER_PAGE
 from flask import (
     g,
     redirect,
@@ -42,7 +44,7 @@ def login_POST():
         id_user =  dict((col, getattr(user, col)) for col in user.__table__.columns.keys())
         session['user'] = id_user 
         session['logged_in'] = True
-        return redirect('/todo')
+        return redirect('/list_todos')
 
     return redirect('/login')
 
@@ -61,18 +63,21 @@ def todo(id):
     return render_template('todo.html', todo=todo)
 
 
-@app.route('/todo', methods=['GET'])
-@app.route('/todo/', methods=['GET'])
-def todos():
+#@app.route('/todo/index', methods=['GET'])
+#@app.route('/todo/index/<int:page>', methods=['GET'])
+#edit home route path, to avoid miss confusion with the above /todo/id link
+@app.route('/list_todos', methods=['GET'])
+@app.route('/list_todos/<int:page>', methods=['GET'])
+def todos(page=1):
     if not session.get('logged_in'):
         return redirect('/login')
     # querying db with sqlalchemy
-    todos = Todos.query.all()
+    todos = Todos.query.order_by(desc(Todos.id)).paginate(page, TODOS_PER_PAGE, error_out=False)
     return render_template('todos.html', todos=todos)
+    
 
-
-@app.route('/todo', methods=['POST'])
-@app.route('/todo/', methods=['POST'])
+@app.route('/list_todos', methods=['POST'])
+@app.route('/list_todos/', methods=['POST'])
 def todos_POST():
     if not session.get('logged_in'):
         return redirect('/login')
@@ -88,11 +93,11 @@ def todos_POST():
         db.session.add(todo)
         db.session.commit()
         
-        return redirect('/todo')
+        return redirect('/list_todos')
     else:
-        flash('The description field is required. ')
+        flash('The description field is required.')
 
-    return redirect('/todo')
+    return redirect('/list_todos')
 
 @app.route('/todo/<id>/json', methods=['GET'])
 def todos_json(id):
@@ -110,4 +115,4 @@ def todo_delete(id):
     
     todo = Todos.query.filter_by(id=id).delete()
     db.session.commit()
-    return redirect('/todo')
+    return redirect('/list_todos')

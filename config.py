@@ -13,3 +13,7 @@ PASSWORD = 'default'
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'alayatodo.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repos')
+
+
+# pagination
+TODOS_PER_PAGE = 3
