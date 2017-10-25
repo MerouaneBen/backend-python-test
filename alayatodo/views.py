@@ -35,13 +35,11 @@ def login():
 def login_POST():
     username = request.form.get('username')
     password = request.form.get('password')
-
+    # querying db with sqlalchemy
     user = Users.query.filter_by(username=username, password=password).first()
-    #sql = "SELECT * FROM users WHERE username = '%s' AND password = '%s'";
-    #cur = g.db.execute(sql % (username, password))
-    #user = cur.fetchone()
     if user:
-        session['user'] = username
+        id_user =  dict((col, getattr(user, col)) for col in user.__table__.columns.keys())
+        session['user'] = id_user 
         session['logged_in'] = True
         return redirect('/todo')
 
@@ -57,8 +55,8 @@ def logout():
 
 @app.route('/todo/<id>', methods=['GET'])
 def todo(id):
-    cur = g.db.execute("SELECT * FROM todos WHERE id ='%s'" % id)
-    todo = cur.fetchone()
+    # querying db with sqlalchemy
+    todo = Todos.query.filter_by(id=id).first()
     return render_template('todo.html', todo=todo)
 
 
@@ -67,8 +65,7 @@ def todo(id):
 def todos():
     if not session.get('logged_in'):
         return redirect('/login')
-    #cur = g.db.execute("SELECT * FROM todos")
-    #todos = cur.fetchall()
+    # querying db with sqlalchemy
     todos = Todos.query.all()
     return render_template('todos.html', todos=todos)
 
@@ -86,11 +83,10 @@ def todos_POST():
         # if the content is valide
         # we assign the content of the field in this variable 
         description_text = request.form.get('description')
-        g.db.execute(
-            "INSERT INTO todos (user_id, description) VALUES ('%s', '%s')"
-            % (session['user']['id'], description_text) # request.form.get('description', '') I'm not sure about why we have 2 elements iside this tuple, when we need only one value.
-        )
-        g.db.commit()
+        todo=Todos(description=description_text, user_id=session['user']['id'])
+        db.session.add(todo)
+        db.session.commit()
+        
         return redirect('/todo')
     else:
         flash('The description field is required. ')
@@ -101,6 +97,7 @@ def todos_POST():
 def todo_delete(id):
     if not session.get('logged_in'):
         return redirect('/login')
-    g.db.execute("DELETE FROM todos WHERE id ='%s'" % id)
-    g.db.commit()
+    
+    todo = Todos.query.filter_by(id=id).delete()
+    db.session.commit()
     return redirect('/todo')
