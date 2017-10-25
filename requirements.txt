@@ -1,4 +1,7 @@
 Flask
 Flask-WTF
+flask-sqlalchemy
+flask-migrate
+sqlalchemy-migrate
 Jinja2
 docopt

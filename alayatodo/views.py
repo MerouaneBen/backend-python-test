@@ -1,6 +1,8 @@
 from alayatodo import app
 from wtforms.validators import DataRequired  
-from wtforms import Form, TextField    
+from wtforms import Form, TextField
+from .models import Users, Todos 
+from alayatodo import app, db 
 from flask import (
     g,
     redirect,
@@ -9,6 +11,7 @@ from flask import (
     session, 
     flash
     )
+
 
 class DescriptionForm(Form):
     """this class validate the content of the description filed.
@@ -33,11 +36,12 @@ def login_POST():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    sql = "SELECT * FROM users WHERE username = '%s' AND password = '%s'";
-    cur = g.db.execute(sql % (username, password))
-    user = cur.fetchone()
+    user = Users.query.filter_by(username=username, password=password).first()
+    #sql = "SELECT * FROM users WHERE username = '%s' AND password = '%s'";
+    #cur = g.db.execute(sql % (username, password))
+    #user = cur.fetchone()
     if user:
-        session['user'] = dict(user)
+        session['user'] = username
         session['logged_in'] = True
         return redirect('/todo')
 
@@ -63,8 +67,9 @@ def todo(id):
 def todos():
     if not session.get('logged_in'):
         return redirect('/login')
-    cur = g.db.execute("SELECT * FROM todos")
-    todos = cur.fetchall()
+    #cur = g.db.execute("SELECT * FROM todos")
+    #todos = cur.fetchall()
+    todos = Todos.query.all()
     return render_template('todos.html', todos=todos)
 
 
