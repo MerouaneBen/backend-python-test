@@ -9,7 +9,8 @@ from flask import (
     render_template,
     request,
     session, 
-    flash
+    flash,
+    jsonify
     )
 
 
@@ -92,6 +93,15 @@ def todos_POST():
         flash('The description field is required. ')
 
     return redirect('/todo')
+
+@app.route('/todo/<id>/json', methods=['GET'])
+def todos_json(id):
+    if not session.get('logged_in'):
+        return redirect('/login')
+    todo = Todos.query.filter_by(id=id).first()
+    todo_json =  dict((col, getattr(todo, col)) for col in todo.__table__.columns.keys())
+    return jsonify(todo_json)
+
 
 @app.route('/todo/<id>', methods=['POST'])
 def todo_delete(id):
