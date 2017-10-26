@@ -99,6 +99,7 @@ def todos_POST():
 
     return redirect('/list_todos')
 
+
 @app.route('/todo/<id>/json', methods=['GET'])
 def todos_json(id):
     if not session.get('logged_in'):
@@ -114,5 +115,15 @@ def todo_delete(id):
         return redirect('/login')
     
     todo = Todos.query.filter_by(id=id).delete()
+    db.session.commit()
+    return redirect('/list_todos')
+
+
+@app.route('/todocompleted/<id>', methods=['POST'])
+def todo_completed(id):
+    if not session.get('logged_in'):
+        return redirect('/login')
+    todo = Todos.query.filter_by(id=id).update({'is_completed':True})
+    #todo.is_completed = True
     db.session.commit()
     return redirect('/list_todos')
