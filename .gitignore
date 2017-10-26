@@ -1,6 +1,5 @@
 *.pyc
 .idea
 Dockerfile
-.gitignore
 db_repos/
 /alayatodo.db
