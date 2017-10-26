@@ -16,4 +16,4 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repos')
 
 
 # pagination
-TODOS_PER_PAGE = 3
+TODOS_PER_PAGE = 5

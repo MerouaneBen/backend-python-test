@@ -63,8 +63,6 @@ def todo(id):
     return render_template('todo.html', todo=todo)
 
 
-#@app.route('/todo/index', methods=['GET'])
-#@app.route('/todo/index/<int:page>', methods=['GET'])
 #edit home route path, to avoid miss confusion with the above /todo/id link
 @app.route('/list_todos', methods=['GET'])
 @app.route('/list_todos/<int:page>', methods=['GET'])
