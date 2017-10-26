@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
 <div class="col-md-4 col-md-offset-4">
     <h1>Todo List:</h1>
     <table class="table table-striped">
@@ -23,7 +24,7 @@
                 </td>
                 <td>
                     <form method="post" action="{{ url_for('todo_delete', id=todo.id) }}">
-                        <button type="submit" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove glyphicon-white"></span></button>
+                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Are you sure you want to delete the task?')"><span class="glyphicon glyphicon-remove glyphicon-white"></span></button>
                     </form>
                 </td>
                 <td>
@@ -40,7 +41,7 @@
                     <input type="textbox" name="description" class="small-6 small-center" placeholder="Description...">
                 </td>
                 <td>
-                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to add the the task?')">Add</button>
                 </td>
             </form>
         </tr>
