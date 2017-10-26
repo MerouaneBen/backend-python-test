@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 from migrate.versioning import api
-from ayatodo.config import SQLALCHEMY_DATABASE_URI
-from ayatodo.config import SQLALCHEMY_MIGRATE_REPO
-from ayatodo import db
+from alayatodo.config import SQLALCHEMY_DATABASE_URI
+from alayatodo.config import SQLALCHEMY_MIGRATE_REPO
+from alayatodo import db
 import os.path
 
 db.create_all()
