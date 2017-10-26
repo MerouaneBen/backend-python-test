@@ -93,7 +93,7 @@ def todos_POST():
         
         return redirect('/list_todos')
     else:
-        flash('The description field is required.')
+        flash('The description field is required.','warning')
 
     return redirect('/list_todos')
 
